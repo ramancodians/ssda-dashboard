@@ -10,6 +10,7 @@ import { useFirestoreCollectionMutation } from "@react-query-firebase/firestore"
 import { collection } from "firebase/firestore"
 import { generateNewCode, getCurrentWorkCode, updateWorkCode } from "../../utils/workcode"
 import { get } from "lodash"
+import { HeartFilled, FullscreenExitOutlined } from "@ant-design/icons"
 
 const Wrap = styled.div`
   padding: 20px;
@@ -219,3 +220,5 @@ const NewWork = () => {
 }
 
 export default NewWork
+
+today i have to make fun of khushboo! and tell <HeartFilled className="">asdasd FullscreenExitOutlinedasdsd </HeartFilled>
