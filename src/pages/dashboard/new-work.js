@@ -220,5 +220,3 @@ const NewWork = () => {
 }
 
 export default NewWork
-
-today i have to make fun of khushboo! and tell <HeartFilled className="">asdasd FullscreenExitOutlinedasdsd </HeartFilled>
