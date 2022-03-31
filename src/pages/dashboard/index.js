@@ -7,9 +7,13 @@ import Sidebar from "../../comps/sidebar"
 // Pages
 import NewWork from "./new-work"
 import Doctors from "./doctors"
-import NewDoctors from "./doctors/new"
+import NewDoctors from "./doctors/new-doctor"
+import Home from "./home"
+import WorkType from "./workType"
+import Work from "./work"
 
 const Wrap = styled.div`
+  background: #F6F7F9;
   
 `
 
@@ -19,8 +23,8 @@ const MainWrap = styled.div`
 
 const ChildWrap = styled.div`
   flex: 1;
-  background: #F6F7F9;
   padding: 20px;
+  margin-top: 60px;
 `
 
 
@@ -42,9 +46,12 @@ class Dashboard extends React.PureComponent {
           <Sidebar />
           <ChildWrap>
             <Switch>
-              <Route path="/dashboard/new-work" component={NewWork}/>
-              <Route path="/dashboard/doctors" component={Doctors} exact/>
-              <Route path="/dashboard/doctors/new" component={NewDoctors}/>
+              <Route path="/dashboard" component={Home} exact />
+              <Route path="/dashboard/new-work" component={NewWork} exact />
+              <Route path="/dashboard/doctors" component={Doctors} exact />
+              <Route path="/dashboard/doctors/new" component={NewDoctors} exact />
+              <Route path="/dashboard/work-types" component={WorkType} exact />
+              <Route path="/dashboard/entry" component={Work} exact />
             </Switch>
           </ChildWrap>
         </MainWrap>

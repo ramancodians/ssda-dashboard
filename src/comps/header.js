@@ -8,7 +8,10 @@ import { Link } from "react-router-dom"
 const Wrap = styled.div`
   background: ${BASE_C};
   color: #fff;
-
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  z-index: 10;
 `
 
 const InnerWrap = styled.div`
