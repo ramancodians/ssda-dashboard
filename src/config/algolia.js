@@ -4,3 +4,6 @@ import { ALGOLIA_KEY } from './consts';
 // API keys below contain actual values tied to your Algolia account
 const client = algoliasearch('PHRI3NXJTF', ALGOLIA_KEY);
 export const doctorIndex = client.initIndex('Doctor Search');
+
+console.log({ client });
+export const workIndex = client.initIndex("WorkIndex")

@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import styled from "styled-components"
 import { upperCase } from "lodash"
 import { DENTAL_SHADES } from "./../../consts"
+import { getUnitCount } from "../../utils/unit"
 
 const Wrap = styled.div`
   width: 400px;
@@ -57,8 +58,14 @@ const Teeth = styled.div`
   ${props => props.viewOnly && `
     width: auto;
     height: auto;
-    color: #ddd;
+    color: transparent;
     pointer-events: none;
+    background: transparent;
+
+    ${props.isSelected && `
+      color: #333;
+      font-weight: bold;
+    `}
   `}
 
   &:hover {
@@ -68,19 +75,18 @@ const Teeth = styled.div`
 
 
 const createChart = () => {
-  const fullList = []
+  const fullList = {}
   for (let i = 1; i <= 4; i++) {
     const section = []
     for(let j = 1; j <= 8; j++) {
+      
       section.push({
         name: j,
         shade: "",
         isSelected: false,
       })
     }
-    fullList.push(
-      i%2 ? section.reverse() : section
-    )
+    fullList[i - 1] = i%2 ? section.reverse() : section
   }
   return fullList
 }
@@ -90,7 +96,7 @@ const ToothSelector = ({ value, onChange, viewOnly, ...props }) => {
   const [ toothChart, settoothChart ] = useState(value || createChart())
 
   const onTeethSelect = (sectionIndex, teethIndex) => {
-    const newChart = [...toothChart]
+    const newChart = {...toothChart}
     newChart[sectionIndex][teethIndex].isSelected = !toothChart[sectionIndex][teethIndex].isSelected
     settoothChart(newChart)
     onChange?.(newChart)
@@ -99,7 +105,7 @@ const ToothSelector = ({ value, onChange, viewOnly, ...props }) => {
   return (
     <Wrap viewOnly={viewOnly}>
       <InnerWrap>
-        {toothChart.map((section, sectionIndex) => (
+        {Object.values(toothChart).map((section, sectionIndex) => (
           <SectionWrap key={sectionIndex}>
             {section && section.map((teeth, teethIndex) => (
               <TeethWrap key={teeth.name} viewOnly={viewOnly}>
@@ -114,6 +120,7 @@ const ToothSelector = ({ value, onChange, viewOnly, ...props }) => {
             ))}
           </SectionWrap>
         ))}
+        <h6>Total Units: {getUnitCount(toothChart)}</h6>
       </InnerWrap>
     </Wrap>
   )

@@ -4,13 +4,16 @@ import styled from "styled-components"
 import ToothSelector from "./../../comps/form/tooth-selector"
 import DoctorSearch from "../../comps/form/doctor_search"
 import WorkTypeDropdown from "../../comps/form/workTypeDropdown"
-import { COLLECTIONS } from "../../consts"
+import { COLLECTIONS, PROGESS_STATUS } from "../../consts"
 import { firestore } from "../../config/firebase"
 import { useFirestoreCollectionMutation } from "@react-query-firebase/firestore"
 import { collection } from "firebase/firestore"
 import { generateNewCode, getCurrentWorkCode, updateWorkCode } from "../../utils/workcode"
 import { get } from "lodash"
 import { HeartFilled, FullscreenExitOutlined } from "@ant-design/icons"
+import { useHistory } from "react-router-dom"
+import { workIndex } from "../../config/algolia"
+import { getUnitCount } from "../../utils/unit"
 
 const Wrap = styled.div`
   padding: 20px;
@@ -58,8 +61,13 @@ const FieldValue = styled.div`
 const NewWork = () => {
   const [ workcode, setWorkCode ] = useState("A01")
   const [ basicFormData, setBasicForm ] = useState()
-  const [ patientForm, setPatientForm ] = useState()
+  const [ patientForm, setPatientForm ] = useState({
+    name: "",
+    phone: "",
+  })
   const [ step, setStep ] = useState(0)
+  const history = useHistory()
+
   const ref = collection(firestore, COLLECTIONS.WORK);
   const mutation = useFirestoreCollectionMutation(ref);
 
@@ -107,7 +115,49 @@ const NewWork = () => {
     next()
   }
 
-  console.log({ basicFormData });
+  const initProgressStatus = (status, updateTime = new Date(), workSteps) => {
+    const recievedIndex = PROGESS_STATUS.findIndex(x => x.value === status)
+    if (recievedIndex != -1) {
+      const newData = [...PROGESS_STATUS]
+      newData[recievedIndex] = {
+        ...PROGESS_STATUS[recievedIndex],
+        completed_on: updateTime,
+      }
+      return Object.values(newData)
+    }
+    return Object.values(PROGESS_STATUS)
+  }
+
+  const createWorkStatus = (stepsList = []) => {
+    if (stepsList && stepsList.length > 0) {
+      const newList = stepsList.map(stepName => {
+        return {
+          label: stepName,
+          value: (stepName || "").toLowerCase().replace(/ /g,"_"),
+        }
+      })
+      return Object.values(newList)
+    }
+    return stepsList
+  }
+
+  const handleFinish = async () => {
+    const payload = {
+      ...basicFormData,
+      patientInfo: patientForm || {},
+      code: workcode,
+      unit_count: getUnitCount(basicFormData.tooth),
+      created_on: new Date(),
+      overall_status: initProgressStatus("received", new Date()),
+      work_status: createWorkStatus(get(basicFormData, "work_type.steps"))
+    }
+    console.log({ payload });
+    mutation.mutate({
+     ...payload,
+    })
+    await updateWorkCode(workcode)
+    history.push("/dashboard/entry")
+  }
 
   return (
     <Wrap>
@@ -210,7 +260,7 @@ const NewWork = () => {
             </FieldValue>
           ))}
           
-          <Button onClick={next} type="primary">
+          <Button onClick={next} type="primary" onClick={handleFinish}>
             Finish
           </Button>
         </Step3Wrap>

@@ -6,13 +6,11 @@ import './App.css';
 //  Pages
 import Login from "./pages/login"
 import DashboardMain from "./pages/dashboard"
+import StaffApp from "./pages/staff-app"
 import { auth } from "./config/firebase"
-import { useNavigate } from "react-router";
 
 const App = () => {
   const user = useAuthUser(["user"], auth);
-  console.log(user);
-
   if (user.status === "success" && !user.data && window.location.pathname !== "/") {
     window.location.href = "/"
   }
@@ -21,6 +19,7 @@ const App = () => {
       <Switch>
         <Route path="/" component={Login} exact />
         <Route path="/dashboard" component={DashboardMain} />
+        <Route path="/staff" component={StaffApp} />
       </Switch>
     </>
   );

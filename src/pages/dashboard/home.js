@@ -1,12 +1,14 @@
-import React, { useState, userEffect } from "react"
+import React, { useState, userEffect, useEffect } from "react"
 import styled from "styled-components"
 import { Card, Table, Space, Button, Tag } from "antd"
-import { collection } from "firebase/firestore"
+import { collection, where, getDocs, query } from "firebase/firestore"
 import { firestore } from "../../config/firebase"
 import { COLLECTIONS } from "../../consts"
 import { useFirestoreQuery, useFirestoreCollectionMutation } from "@react-query-firebase/firestore"
 import { format } from "date-fns"
 import ToothSelector from "../../comps/form/tooth-selector"
+import { getPricing, deformatCurrency, rupeeFormatter } from "../../utils/rupee"
+import { isEmpty } from "lodash"
 
 const Wrap = styled.div`
   
@@ -23,10 +25,62 @@ const StatusWrap = styled.div`
 
 const Home = ({ }) => {
   const ref = collection(firestore, COLLECTIONS.WORK);
+  const [ stats, setStats ] = useState({})
   const mutation = useFirestoreCollectionMutation(ref);
   const workList = []
+  const startDate = new Date()
+    startDate.setUTCHours(0,0,0,0);
+
+  useEffect(() => {
+    getTotalWorkToday()
+  }, [])
 
   const WorkData = useFirestoreQuery([COLLECTIONS.WORK], ref);
+
+  const getTotalWorkToday = async () => {
+    console.log("adasdasds");
+    const q = query(
+      collection(firestore, COLLECTIONS.WORK),
+      where("created_on", ">", startDate)
+    )
+    const snap = await getDocs(q)
+    const list = snap.docs.map(doc => {
+      return {
+        ...doc.data(),
+        id: doc.id,
+      }
+    })
+    let totalPriceLocal = 0
+    let totalUnitLocal = 0
+    let pendingCount = 0
+    let inProduction = 0
+    let readyCount = 0
+    if (list && list.length > 0) {
+      list.map(item => {
+        totalPriceLocal = totalPriceLocal + deformatCurrency(getPricing(item.work_type, item.unit_count))
+        totalUnitLocal = totalUnitLocal + item.unit_count
+        const recievedObj = item.overall_status.find(x => x.value === "received")
+        const productionObj = item.overall_status.find(x => x.value === "in-production")
+        const readyObj = item.overall_status.find(x => x.value === "ready")
+        if (!isEmpty(recievedObj) && recievedObj.completed_on) {
+          pendingCount = pendingCount + 1
+        }
+        if (!isEmpty(productionObj) && productionObj.completed_on) {
+          inProduction = inProduction + 1
+        }
+        if (!isEmpty(readyObj) && readyObj.completed_on) {
+          readyCount = readyCount + 1
+        }
+      })
+    }
+    setStats({
+      totalPrice: totalPriceLocal,
+      totalUnits: totalUnitLocal,
+      totalInPendind: pendingCount,
+      totalInProduction: inProduction,
+      totalInReady: readyCount,
+    })
+  }
 
   if (WorkData.data && WorkData.data) {
     WorkData.data.docs.map(x => {
@@ -43,16 +97,19 @@ const Home = ({ }) => {
       <h2>Overview</h2>
       <StatusWrap>
         <Card title="Todays Est.">
-        ₹20,000
+          <h2>{rupeeFormatter(stats.totalPrice || 0)}</h2>
         </Card>
         <Card title="Units">
-          20
+          <h2>{stats.totalUnits} Units</h2>
         </Card>
-        <Card title="New">
-          10
+        <Card title="Pending">
+          <h2>{stats.totalInPendind}</h2>
         </Card>
-        <Card title="Delivered">
-          15
+        <Card title="In Production">
+          <h2>{stats.totalInProduction}</h2>
+        </Card>
+        <Card title="Ready">
+          <h2>{stats.totalInReady}</h2>
         </Card>
       </StatusWrap>
       <Table

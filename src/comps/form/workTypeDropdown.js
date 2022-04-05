@@ -39,6 +39,7 @@ const WorkTypeDropdown = ({ onChange, value, placeholder }) => {
 
   const handleSelect = (row) => {
     const selectedItem = workList.find(x => x.id === row)
+    console.log({  selectedItem });
     selectWork(selectedItem)
     onChange?.(
       selectedItem

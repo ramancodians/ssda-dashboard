@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
-import { Row, Col, Button, Modal, Form, Input, Radio, Table, Space } from "antd"
-import { EditOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from "@ant-design/icons"
+import { Row, Col, Button, Modal, Form, Input, Radio, Table, Space, Typography } from "antd"
+import { EditOutlined, CloseCircleOutlined, ExclamationCircleOutlined, PlusCircleFilled } from "@ant-design/icons"
 import { useFirestoreQuery } from "@react-query-firebase/firestore";
 import { collection, doc, deleteDoc } from "firebase/firestore";
 import { useFirestoreCollectionMutation } from "@react-query-firebase/firestore";
@@ -19,6 +19,12 @@ const WorkWrap = styled.div`
 
 const WorkItem = styled.div`
   
+`
+
+const StepsWrap = styled.div`
+  .ant-form-item {
+    margin-bottom: 5px;
+  }
 `
 
 const Pricings = ({ }) => {
@@ -44,6 +50,7 @@ const Pricings = ({ }) => {
   }
   
   const handleAdd = (values) => {
+    console.log(values);
     mutation.mutate({
       ...values,
       created_on: new Date(),
@@ -97,8 +104,6 @@ const Pricings = ({ }) => {
     },
   ];
 
-  console.log({ workData });
-
    return (
     <Wrap>
       <Row>
@@ -128,10 +133,12 @@ const Pricings = ({ }) => {
       {isShowNewWorkTypeModal && (
         <Modal
           visible={true}
-          title="New work type"
+          title="Adding new Work Type"
           footer={null}
           onCancel={() => { setIsShowNewWorkTypeModal(false) }}
-          initialValues={{}}
+          initialValues={{
+            steps: [{}]
+          }}
         >
           <Form
             layout="vertical"
@@ -142,14 +149,14 @@ const Pricings = ({ }) => {
               label="Name"
               rules={[{ required: true, message: "Required" }]}
             >
-              <Input />
+              <Input placeholder="Zirconia, ceramic etc."/>
             </Form.Item>
             <Form.Item
               name="price"
               label="Price"
               rules={[{ required: true, message: "Required" }]}
             >
-              <Input />
+              <Input placeholder="1,000"/>
             </Form.Item>
             <Form.Item
               name="pricing_type"
@@ -162,8 +169,59 @@ const Pricings = ({ }) => {
               </Radio.Group>
             </Form.Item>
 
+            <Form.List
+              name="steps"
+              label="Production Steps"
+            >
+              {(fields, { add, remove }) => (
+                <StepsWrap>
+                  <h4>Production Steps</h4>
+                  <Typography.Text type="secondary">
+                    Add Steps of tasks to finish this type of entry. This will useful when updating status for this kinda of work in future.
+                  </Typography.Text>
+                  <br/>
+                  <br/>
+                  {fields.map((field, index) => (
+                    <Form.Item
+                      {...field}
+                    >
+                      <Row align="center" justify="center">
+                        <Col center>
+                          <p style={{ marginTop: 5, marginRight: 10 }}>
+                            ({index + 1})
+                          </p>
+                        </Col>
+                        <Col flex={1}>
+                          <Input placeholder="Steps"/>
+                        </Col>
+                        <Col>
+                          <Button danger onClick={() => { remove(field.name) }} icon={<CloseCircleOutlined />} />
+                        </Col>
+                      </Row>
+                    </Form.Item>
+                  ))}
+                  <Row>
+                    <Col flex={1} />
+                    <Col>
+                      <Button onClick={add} icon={<PlusCircleFilled />}>
+                        Add Step
+                      </Button>
+                    </Col>
+                  </Row>
+                </StepsWrap>
+              )}
+            </Form.List>
+
+            <Form.Item
+              name="color"
+              label="Color Code"
+              rules={[{ required: true, message: "Required" }]}
+            >
+              <Input type="color" style={{ width: 50, height: 50, padding: 0 }}/>
+            </Form.Item>
+
             <Button type="primary" htmlType="submit">
-              Add
+              Add New Work
             </Button>
           </Form>
         </Modal>

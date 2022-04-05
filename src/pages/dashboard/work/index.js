@@ -4,18 +4,27 @@ import { COLLECTIONS } from "../../../consts";
 import { collection } from "firebase/firestore";
 import { useFirestoreCollectionMutation, useFirestoreQuery } from "@react-query-firebase/firestore";
 import { firestore } from "../../../config/firebase";
-import { Table, Space, Tag, Button } from "antd";
+import { Table, Space, Tag, Button, Row, Col } from "antd";
 import { rupeeFormatter } from "../../../utils/rupee";
 import { format } from "date-fns";
 import ToothSelector from "../../../comps/form/tooth-selector";
+import { useHistory } from "react-router-dom";
 
 const Wrap = styled.div`
-  
+  padding: 20px;
+  background: #fff;
+`
+
+const DocInfo = styled.div`
+  > p {
+    margin: 0px;
+  } 
 `
 
 const Addwork = ({ }) => {
   const ref = collection(firestore, COLLECTIONS.WORK);
   const mutation = useFirestoreCollectionMutation(ref);
+  const history = useHistory()
   const workList = []
 
   const workData = useFirestoreQuery([COLLECTIONS.WORK], ref);
@@ -32,7 +41,13 @@ const Addwork = ({ }) => {
   }
    return (
     <Wrap>
-      <h1>Entries</h1>
+      <Row>
+        <Col>
+          <h2>
+            All Entries
+          </h2>
+        </Col>
+      </Row>
       <Table
         columns={[
           {
@@ -45,9 +60,25 @@ const Addwork = ({ }) => {
             ),
           },
           {
+            title: 'Code',
+            dataIndex: "code",
+            key: "code",
+            render: (record) => (
+              <Space>
+                {record}
+              </Space>
+            ),
+          },
+          {
             title: 'Doctor',
-            dataIndex: ["doctor", "full_name"],
-            key: ["doctor", "full_name"],
+            dataIndex: "doctor",
+            key: "doctor",
+            render: (doctor) => (
+              <DocInfo>
+                <p>{doctor.full_name}</p>
+                <p>{doctor.clinic_name || "N/a"}</p>
+              </DocInfo>
+            )
           },
           {
             title: 'Work',
@@ -71,12 +102,11 @@ const Addwork = ({ }) => {
           },
           {
             title: 'Actions',
-            dataIndex: "tooth",
             key: "tooth",
             render: (record) => (
               <Space>
-                <Button>
-                  View
+                <Button onClick={() => { history.push(`/dashboard/entry/${record.code}`) }}>
+                  View Details
                 </Button>
               </Space>
             )

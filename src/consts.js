@@ -1,11 +1,15 @@
 export const BASE_C = "#E8554E"
+export const STAFF_HEADER_C = "#3498db"
 
 export const COLLECTIONS = {
   DOCTORS: "doctors",
   WORK_TYPES: "worktypes",
   WORK: "work",
   WORKCODE: "workcode",
+  STAFF: "staff",
 }
+
+export const DATE_FORMAT = "hh:mm a, d/MM/yyyy"
 
 // Data
 export const INDIAN_STATES = {
@@ -65,4 +69,22 @@ export const DENTAL_SHADES = [
   "D2",
   "D3",
   "D4",
+]
+
+export const PROGESS_STATUS = [
+  {
+    label: "Received",
+    value: "received",
+  },{
+    label: "In Production",
+    value: "in-production",
+  },
+  {
+    label: "Ready",
+    value: "ready",
+  },
+  {
+    label: "Delivered",
+    value: "delivered",
+  },
 ]

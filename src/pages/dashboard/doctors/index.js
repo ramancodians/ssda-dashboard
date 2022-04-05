@@ -4,11 +4,12 @@ import { COLLECTIONS } from "../../../consts";
 import { collection } from "firebase/firestore";
 import { useFirestoreCollectionMutation, useFirestoreQuery } from "@react-query-firebase/firestore";
 import { firestore } from "../../../config/firebase";
-import { Table, Space } from "antd";
+import { Table, Space, Row, Button, Col } from "antd";
 import { rupeeFormatter } from "../../../utils/rupee";
 
 const Wrap = styled.div`
-  
+  padding: 20px;
+  background: #fff;
 `
 
 const Addwork = ({ }) => {
@@ -30,7 +31,18 @@ const Addwork = ({ }) => {
   }
    return (
     <Wrap>
-      <h1>Doctors</h1>
+      <Row>
+        <Col flex={1}>
+          <h2>
+            All Doctors
+          </h2>
+        </Col>
+        <Col>
+          <Button type="primary" onClick={() => {  }}>
+            New Doctor
+          </Button>
+        </Col>
+      </Row>
       {doctorList && doctorList.length > 0 && (
         <Table
           columns={[
@@ -57,7 +69,6 @@ const Addwork = ({ }) => {
           ]}
           dataSource={doctorList}
         />
-
       )}
     </Wrap>
   )

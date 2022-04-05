@@ -16,9 +16,12 @@ const Login = (props) => {
   const handleLogin = async (values) => {
     try {
       setisSigningIn(true)
-      console.log({ values });
       await signInWithEmailAndPassword(auth, values.email, values.password)
-      window.location.href = "/dashboard"
+      if (values.email.includes("staff@ssdentalarts.in")) {
+        window.location.href = "/staff"
+      } else {
+        window.location.href = "/dashboard"
+      }
     } catch (error) {
       console.log(error.message);
       notification.open({

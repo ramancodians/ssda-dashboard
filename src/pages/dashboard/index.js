@@ -11,6 +11,9 @@ import NewDoctors from "./doctors/new-doctor"
 import Home from "./home"
 import WorkType from "./workType"
 import Work from "./work"
+import WorkDetails from "./work/details-view"
+import StaffList from "./staff"
+import StaffNew from "./staff/new-staff"
 
 const Wrap = styled.div`
   background: #F6F7F9;
@@ -52,6 +55,9 @@ class Dashboard extends React.PureComponent {
               <Route path="/dashboard/doctors/new" component={NewDoctors} exact />
               <Route path="/dashboard/work-types" component={WorkType} exact />
               <Route path="/dashboard/entry" component={Work} exact />
+              <Route path="/dashboard/entry/:code" component={WorkDetails} exact />
+              <Route path="/dashboard/staff" component={StaffList} exact />
+              <Route path="/dashboard/staff/new" component={StaffNew} exact />
             </Switch>
           </ChildWrap>
         </MainWrap>

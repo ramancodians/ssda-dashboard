@@ -1,5 +1,5 @@
 import React from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import styled from "styled-components"
 
 const Wrap = styled.div`
@@ -12,39 +12,71 @@ const Wrap = styled.div`
   ul {
     list-style: none;
     padding: 0px;
-
-    li {
-      a {
-        width: 100%;
-        display: block;
-        border-bottom: 1px solid #fff;
-        color: #fff;
-        padding: 10px;
-      }
-    }
   }
 `
 
-const Sidebar = (props) => (
-  <Wrap>
-    <ul>
-      <li>
-        <Link to="/dashboard/doctors">
-          Doctors
-        </Link>
-      </li>
-      <li>
-        <Link to="/dashboard/entry">
-          Entry
-        </Link>
-      </li>
-      <li>
-        <Link to="/dashboard/work-types">
-          Work Types
-        </Link>
-      </li>
-    </ul>
-  </Wrap>
-)
+const Li = styled.div`
+  ${props => props.isActive && `
+    background: rgba(255, 255, 255, 0.2);
+  `}
+
+  a {
+    width: 100%;
+    display: block;
+    border-bottom: 1px solid #444;
+    color: #fff;
+    padding: 10px;
+    font-weight: 500;
+  }
+`
+
+const Sidebar = (props) => {
+  const location = useLocation()
+  console.log({ location });
+  let isActive = null
+
+  const getActiveSection = () => {
+    const { pathname } = location
+    if (pathname.includes("doctors")) {
+      isActive = "doctors"
+    }
+    if (pathname.includes("entry")) {
+      isActive = "entry"
+    }
+    if (pathname.includes("work-types")) {
+      isActive = "work-types"
+    }
+    if (pathname.includes("staff")) {
+      isActive = "staff"
+    }
+  }
+  getActiveSection()
+  return (
+    <Wrap>
+      <ul>
+        <Li isActive={isActive === "doctors"}>
+          <Link to="/dashboard/doctors">
+            Doctors
+          </Link>
+        </Li>
+        <Li isActive={isActive === "entry"}>
+          <Link to="/dashboard/entry">
+            Entry
+          </Link>
+        </Li>
+        <Li isActive={isActive === "work-types"}>
+          <Link to="/dashboard/work-types">
+            Work Types
+          </Link>
+        </Li>
+        <Li isActive={isActive === "staff"}>
+          <Link to="/dashboard/staff">
+            Staff
+          </Link>
+        </Li>
+      </ul>
+    </Wrap>
+  )
+}
 
 export default Sidebar

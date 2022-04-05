@@ -2,8 +2,9 @@ import { Button,  Menu, Dropdown, Input } from "antd"
 import React from "react"
 import styled from "styled-components"
 import { PlusCircleOutlined, DownOutlined  } from "@ant-design/icons"
-import { BASE_C } from "../consts"
+import { BASE_C, STAFF_HEADER_C } from "../consts"
 import { Link } from "react-router-dom"
+import { auth } from "../config/firebase"
 
 const Wrap = styled.div`
   background: ${BASE_C};
@@ -12,6 +13,10 @@ const Wrap = styled.div`
   top: 0px;
   width: 100%;
   z-index: 10;
+
+  ${props => props.isStaffView && `
+    background: ${STAFF_HEADER_C};
+  `}
 `
 
 const InnerWrap = styled.div`
@@ -43,30 +48,46 @@ class Header extends React.PureComponent {
     // const {  } = this.props
   }
 
+  handleLogout = async () => {
+    await auth.signOut()
+    
+  }
+
   render() {
-    // const {  } = this.state
-    // const {  } = this.props
+    //const {  } = this.state
+    const { isStaffView } = this.props
     return (
-      <Wrap>
+      <Wrap isStaffView={isStaffView}>
         <InnerWrap>
           <LogoWrap>
-            <Link  to="/dashboard">
-              SSDA
+            <Link  to={isStaffView ? "/staff" : "/dashboard"}>
+              SSDA {isStaffView && " | Staff App" }
             </Link>
           </LogoWrap>
-          <SearchWrap>
-            <Input
-              placeholder="Search for doctors by name or phone"
-            
-            />
-          </SearchWrap>
-          <OptionsWrap>
-            <Button type="primary" icon={<PlusCircleOutlined />}>
-              <Link to="/dashboard/new-work" style={{ color: "#fff", marginLeft: 6 }}>
-                New Entry
-              </Link>
-            </Button>
-          </OptionsWrap>
+          {!isStaffView && (
+             <SearchWrap>
+              <Input
+                placeholder="Search for doctors by name or phone"
+              
+              />
+            </SearchWrap>
+          )}
+
+          {isStaffView ? (
+            <OptionsWrap>
+              <Button danger>
+                 Logout
+              </Button>
+            </OptionsWrap>
+          ) : (
+            <OptionsWrap>
+              <Button type="primary" icon={<PlusCircleOutlined />}>
+                <Link to="/dashboard/new-work" style={{ color: "#fff", marginLeft: 6 }}>
+                  New Entry
+                </Link>
+              </Button>
+            </OptionsWrap>
+          )}
         </InnerWrap>
       </Wrap>
     )
