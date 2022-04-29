@@ -1,12 +1,12 @@
 import { Form, Input, Button, Row, Col, Select } from "antd"
 import React from "react"
 import styled from "styled-components"
-import { collection, doc } from "firebase/firestore";
-import { useFirestoreCollectionMutation } from "@react-query-firebase/firestore";
-import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
+import { collection, doc, addDoc } from "firebase/firestore";
 import { GOOGLE_PLACES_API_KEY } from "../../../config/consts";
 import { INDIAN_STATES, COLLECTIONS } from "../../../consts";
 import { firestore } from "../../../config/firebase";
+import { useHistory } from "react-router-dom";
+import { addDoctorForElastic } from "../../../config/algolia";
 
 const Wrap = styled.div`
   background: #fff;
@@ -14,17 +14,23 @@ const Wrap = styled.div`
 `
 
 const STATES = Object.keys(INDIAN_STATES).map(key => ({ value: INDIAN_STATES[key], label: INDIAN_STATES[key] }))
-console.log({ STATES });
 
 const NewDoc = () => {
+  const history = useHistory()
   const ref = collection(firestore, COLLECTIONS.DOCTORS);
-  const mutation = useFirestoreCollectionMutation(ref);
 
-  const handleCreateDoc = (values) => {
-    mutation.mutate({
+  const handleCreateDoc = async (values) => {
+    const payload = {
       ...values,
       created_on: new Date(),
+    }
+    const doc = await addDoc(ref, payload)
+    console.log(doc);
+    await addDoctorForElastic({
+      ...payload,
+      objectID: doc.id
     })
+    history.goBack()
   }
 
   return (
@@ -116,7 +122,6 @@ const NewDoc = () => {
         <Button type="primary" htmlType="submit">
           Add
         </Button>
-        {mutation.isError && <p>{mutation.error.message}</p>}
       </Form>
     </Wrap>
   )

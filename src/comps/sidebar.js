@@ -8,7 +8,6 @@ const Wrap = styled.div`
   height: calc(100vh - 50px);
   padding-top: 60px;
   position: sticky;
-  top: 50px;
   ul {
     list-style: none;
     padding: 0px;
@@ -54,19 +53,29 @@ const Sidebar = (props) => {
   return (
     <Wrap>
       <ul>
+        <Li isActive={isActive === "dashboard"}>
+          <Link to="/dashboard">
+            Dashbaord
+          </Link>
+        </Li>
         <Li isActive={isActive === "doctors"}>
           <Link to="/dashboard/doctors">
-            Doctors
+            All Doctors
           </Link>
         </Li>
         <Li isActive={isActive === "entry"}>
           <Link to="/dashboard/entry">
-            Entry
+            All Entry
           </Link>
         </Li>
         <Li isActive={isActive === "work-types"}>
           <Link to="/dashboard/work-types">
             Work Types
+          </Link>
+        </Li>
+        <Li isActive={isActive === "billing"}>
+          <Link to="/dashboard/billing">
+            Billing
           </Link>
         </Li>
         <Li isActive={isActive === "staff"}>

@@ -1,4 +1,4 @@
-import React, { useState, userEffect } from "react"
+import React, { useState, userEffect, useRef } from "react"
 import styled from "styled-components"
 import { Row, Col, Select, Typography } from "antd"
 import { firestore } from "../../../config/firebase"
@@ -11,6 +11,7 @@ import { startCase } from "lodash"
 import { format } from "date-fns"
 import { getPricing } from "../../../utils/rupee"
 import Timeline from "./timeline"
+import EntryActions from "./entry-actions"
 
 const Wrap = styled.div`
   padding: 20px;
@@ -43,6 +44,8 @@ const DataView = styled.div`
 
 const DetailsView = () => {
   const params = useParams()
+  const [ refetchCount, setRefetchCount ] = useState(0)
+  const timelineRef = useRef()
   const entryRef = query(collection(firestore, COLLECTIONS.WORK), where("code", "==", params.code))
   const entryHook = useFirestoreQuery([`${COLLECTIONS.WORK}_${params.code}`], entryRef)
   let entryData;
@@ -54,8 +57,10 @@ const DetailsView = () => {
     }))
     entryData = snap[0]
   }
+
+  console.log({ timelineRef });
   
-   return (
+  return (
     <Wrap>
       <Row>
         <Col flex={1}>
@@ -69,7 +74,7 @@ const DetailsView = () => {
           </Select>
         </Col>
       </Row>
-      <Row style={{ marginTop: 30 }} gutter={20}>
+      <Row style={{ marginTop: 30, flexWrap: "nowrap" }} gutter={20}>
         <Col flex={1}>
         {entryData && (
           <React.Fragment>
@@ -121,7 +126,7 @@ const DetailsView = () => {
               <DataView>
                 <p>Total Price</p>
                 <h4>
-                  {getPricing(entryData.work_type, 2)}/-
+                  {getPricing(entryData.work_type, entryData.unit_count)}/-
                 </h4>
               </DataView>
             </NonEditablefield>
@@ -149,7 +154,14 @@ const DetailsView = () => {
         )}
         </Col>
         <Col>
-          <Timeline />
+          <EntryActions
+            code={params.code} entry={entryData}
+            refetch={() => { setRefetchCount((prevVal) => { return prevVal + 1  }) }}
+          />
+          <Timeline
+            code={params.code}
+            refetchCount={refetchCount}
+          />
         </Col>
       </Row>
     </Wrap>

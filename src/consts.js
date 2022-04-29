@@ -7,6 +7,7 @@ export const COLLECTIONS = {
   WORK: "work",
   WORKCODE: "workcode",
   STAFF: "staff",
+  ACTIVITY: "activity",
 }
 
 export const DATE_FORMAT = "hh:mm a, d/MM/yyyy"
@@ -52,6 +53,10 @@ export const INDIAN_STATES = {
   "WB":"West Bengal"
 }
 
+export const SMS_TYPES = {
+  TEST: "Blindly-Web-Interest-Form"
+}
+
 export const DENTAL_SHADES = [
   "A1",
   "A2",
@@ -88,3 +93,22 @@ export const PROGESS_STATUS = [
     value: "delivered",
   },
 ]
+
+
+export const ACTIVITY_ITEMS = {
+  SMS_SEND_MANNUAL: {
+    task: "Mannual SMS Sent",
+  },
+  CHANGED_WORK_STATUS: {
+    task: "Updated to"
+  },
+  ENTRY_MADE: {
+    task: "Entry made"
+  },
+  UPDATES_SENT: {
+    task: "Updates sent to doctor"
+  },
+  ENTRY_UPDATED: {
+    task: "Entry updated"
+  },
+}

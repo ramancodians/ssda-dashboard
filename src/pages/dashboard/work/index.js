@@ -1,14 +1,15 @@
 import React, { useState, userEffect } from "react"
 import styled from "styled-components"
 import { COLLECTIONS } from "../../../consts";
-import { collection } from "firebase/firestore";
+import { collection, orderBy, query } from "firebase/firestore";
 import { useFirestoreCollectionMutation, useFirestoreQuery } from "@react-query-firebase/firestore";
 import { firestore } from "../../../config/firebase";
 import { Table, Space, Tag, Button, Row, Col } from "antd";
-import { rupeeFormatter } from "../../../utils/rupee";
-import { format } from "date-fns";
+import { rupeeFormatter, getPricing } from "../../../utils/rupee";
+import { format, formatDistanceToNow } from "date-fns";
 import ToothSelector from "../../../comps/form/tooth-selector";
 import { useHistory } from "react-router-dom";
+import { getLatestStatus, getListFromFirebase, getColorsAndIconForStatus } from "../../../utils/unit";
 
 const Wrap = styled.div`
   padding: 20px;
@@ -21,24 +22,19 @@ const DocInfo = styled.div`
   } 
 `
 
+const TimeWrap = styled.div`
+  
+`
+
 const Addwork = ({ }) => {
-  const ref = collection(firestore, COLLECTIONS.WORK);
-  const mutation = useFirestoreCollectionMutation(ref);
+  const entryQuery = query(
+    collection(firestore, COLLECTIONS.WORK),
+    orderBy("created_on", "desc")
+  )
   const history = useHistory()
-  const workList = []
-
-  const workData = useFirestoreQuery([COLLECTIONS.WORK], ref);
-
-  if (workData.data) {
-    workData.data.docs.map(x => {
-      workList.push(
-        {
-          ...x.data(),
-          id: x.id,
-        }
-      )
-    })
-  }
+  const workData = useFirestoreQuery([COLLECTIONS.WORK], entryQuery);
+  const workList = getListFromFirebase(workData)
+  console.log({ workList });
    return (
     <Wrap>
       <Row>
@@ -53,9 +49,17 @@ const Addwork = ({ }) => {
           {
             title: 'Date',
             dataIndex: "created_on",
+            key: "created_on",
             render: (record) => (
               <Space>
-                {format(record.toDate(), "hh:mm | dd MMM")}
+                <TimeWrap>
+                  <p>
+                    {format(record.toDate(), "hh:mm | dd MMM")}
+                  </p>
+                  <h4>
+                    {formatDistanceToNow(record.toDate())} ago
+                  </h4>
+                </TimeWrap>
               </Space>
             ),
           },
@@ -82,11 +86,22 @@ const Addwork = ({ }) => {
           },
           {
             title: 'Work',
-            dataIndex: "tooth",
             key: "tooth",
             render: (record) => (
               <Space>
-                <ToothSelector value={Object.keys(record).map(key => record[key])} viewOnly/>
+                <ToothSelector
+                  value={Object.keys(record.tooth).map(key => record.tooth[key])}
+                  viewOnly
+                  workType={record.work_type}
+                />
+              </Space>
+            )
+          },
+          {
+            title: 'Price',
+            render: (record) => (
+              <Space>
+                {getPricing(record.work_type, record.unit_count)}
               </Space>
             )
           },
@@ -94,9 +109,7 @@ const Addwork = ({ }) => {
             title: 'Status',
             render: (record) => (
               <Space>
-                <Tag>
-                  Recieved
-                </Tag>
+                {getColorsAndIconForStatus(getLatestStatus(record.work_status))}
               </Space>
             )
           },

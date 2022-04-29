@@ -2,11 +2,12 @@ import React, { useState, userEffect, useEffect } from "react"
 import styled from "styled-components"
 import { useParams } from "react-router-dom"
 import { firestore, auth } from "../../config/firebase"
-import { COLLECTIONS } from "../../consts"
+import { COLLECTIONS, ACTIVITY_ITEMS } from "../../consts"
 import { collection, query, where, doc, updateDoc } from "firebase/firestore"
 import { useFirestoreCollectionMutation, useFirestoreQuery } from "@react-query-firebase/firestore"
 import ToothSelector from "../../comps/form/tooth-selector"
 import { Modal } from "antd"
+import { createActivity } from "../../utils/activity"
 
 const Wrap = styled.div`
   
@@ -109,6 +110,9 @@ const EditStatus = ({ }) => {
     }
     console.log({ upldatePayload });
     await updateDoc(ref, upldatePayload)
+    await createActivity(params.code, ACTIVITY_ITEMS.CHANGED_WORK_STATUS, {
+      status: step.value,
+    })
     workQuery.refetch()
   }
 

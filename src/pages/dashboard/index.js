@@ -8,9 +8,12 @@ import Sidebar from "../../comps/sidebar"
 import NewWork from "./new-work"
 import Doctors from "./doctors"
 import NewDoctors from "./doctors/new-doctor"
+import DoctorDetails from "./doctors/doctor_full_details"
 import Home from "./home"
 import WorkType from "./workType"
 import Work from "./work"
+import Billing from "./billing"
+import EditWork from "./work/edit-work"
 import WorkDetails from "./work/details-view"
 import StaffList from "./staff"
 import StaffNew from "./staff/new-staff"
@@ -51,13 +54,23 @@ class Dashboard extends React.PureComponent {
             <Switch>
               <Route path="/dashboard" component={Home} exact />
               <Route path="/dashboard/new-work" component={NewWork} exact />
+
               <Route path="/dashboard/doctors" component={Doctors} exact />
               <Route path="/dashboard/doctors/new" component={NewDoctors} exact />
+              <Route path="/dashboard/doctors/view/:docId" component={DoctorDetails} exact />
+
               <Route path="/dashboard/work-types" component={WorkType} exact />
+
               <Route path="/dashboard/entry" component={Work} exact />
+              <Route path="/dashboard/entry/edit/:code" component={EditWork} exact />
               <Route path="/dashboard/entry/:code" component={WorkDetails} exact />
+
               <Route path="/dashboard/staff" component={StaffList} exact />
               <Route path="/dashboard/staff/new" component={StaffNew} exact />
+
+
+              <Route path="/dashboard/billing" component={Billing} exact />
+
             </Switch>
           </ChildWrap>
         </MainWrap>

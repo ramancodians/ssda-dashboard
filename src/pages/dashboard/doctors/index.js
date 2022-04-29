@@ -6,29 +6,28 @@ import { useFirestoreCollectionMutation, useFirestoreQuery } from "@react-query-
 import { firestore } from "../../../config/firebase";
 import { Table, Space, Row, Button, Col } from "antd";
 import { rupeeFormatter } from "../../../utils/rupee";
+import { getListFromFirebase } from "../../../utils/unit";
+import { useHistory } from "react-router-dom";
 
 const Wrap = styled.div`
   padding: 20px;
   background: #fff;
 `
 
+const DoctorAbout = styled.div`
+  
+`
+
 const Addwork = ({ }) => {
+  const history = useHistory()
   const ref = collection(firestore, COLLECTIONS.DOCTORS);
   const mutation = useFirestoreCollectionMutation(ref);
-  const doctorList = []
 
   const doctorData = useFirestoreQuery([COLLECTIONS.DOCTORS], ref);
 
-  if (doctorData.data && doctorData.data) {
-    doctorData.data.docs.map(x => {
-      doctorList.push(
-        {
-          ...x.data(),
-          id: x.id,
-        }
-      )
-    })
-  }
+  const doctorList = getListFromFirebase(doctorData)
+
+  console.log({ doctorList  });
    return (
     <Wrap>
       <Row>
@@ -38,7 +37,7 @@ const Addwork = ({ }) => {
           </h2>
         </Col>
         <Col>
-          <Button type="primary" onClick={() => {  }}>
+          <Button type="primary" onClick={() => { history.push("/dashboard/doctors/new") }}>
             New Doctor
           </Button>
         </Col>
@@ -47,9 +46,19 @@ const Addwork = ({ }) => {
         <Table
           columns={[
             {
-              title: 'Name',
-              dataIndex: 'full_name',
-              key: 'full_name',
+              title: 'Docto',
+              key: 'doctor_details',
+              render: (record) => (
+                <Space>
+                  <DoctorAbout>
+                    <h4>
+                      {record.full_name}
+                    </h4>
+                    <h4>{record.phone}</h4>
+                    <h4>{record.clinic_name}</h4>
+                  </DoctorAbout>
+                </Space>
+              )
             },
             {
               title: 'Phone',
@@ -57,12 +66,18 @@ const Addwork = ({ }) => {
               key: 'phone',
             },
             {
+              title: 'Pending Bill',
+              dataIndex: 'phone',
+              key: 'phone',
+            },
+            {
               title: 'Actions',
-              dataIndex: 'price',
-              key: "price",
+              key: "actions",
               render: (record) => (
                 <Space>
-                  <p>{rupeeFormatter(record)}</p>
+                  <Button onClick={() => { history.push(`/dashboard/doctors/view/${record.id}`) }}>
+                    View Details
+                  </Button>
                 </Space>
               )
             },

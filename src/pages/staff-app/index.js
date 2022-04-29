@@ -10,11 +10,14 @@ const Wrap = styled.div`
 `
 
 const ChildWrap = styled.div`
+  background: #eee;
+`
+
+const InnerWrap = styled.div`
+  min-height: 100vh;
   max-width: 600px;
   margin: 50px auto 60px auto;
   padding: 16px;
-  background: #eee;
-  min-height: 100vh;
 `
 
 const StaffApp = ({ }) => {
@@ -26,10 +29,12 @@ const StaffApp = ({ }) => {
     <Wrap>
       <Header isStaffView/>
       <ChildWrap>
-        <Switch>
-          <Route path="/staff" component={WorkList} exact />
-          <Route path="/staff/work/:code" component={WorkEdit} exact />
-        </Switch>
+        <InnerWrap>
+          <Switch>
+            <Route path="/staff" component={WorkList} exact />
+            <Route path="/staff/work/:code" component={WorkEdit} exact />
+          </Switch>
+        </InnerWrap>
       </ChildWrap>
     </Wrap>
   )

@@ -3,6 +3,7 @@ import styled from "styled-components"
 import { upperCase } from "lodash"
 import { DENTAL_SHADES } from "./../../consts"
 import { getUnitCount } from "../../utils/unit"
+import { Row, Col } from "antd"
 
 const Wrap = styled.div`
   width: 400px;
@@ -10,6 +11,10 @@ const Wrap = styled.div`
     width: 100%;
     max-width: 400px;
   `}
+
+  h6 {
+    font-size: 12px;
+  }
 
 `
 
@@ -92,7 +97,7 @@ const createChart = () => {
 }
 
 
-const ToothSelector = ({ value, onChange, viewOnly, ...props }) => {
+const ToothSelector = ({ value, onChange, viewOnly, workType, ...props  }) => {
   const [ toothChart, settoothChart ] = useState(value || createChart())
 
   const onTeethSelect = (sectionIndex, teethIndex) => {
@@ -120,8 +125,17 @@ const ToothSelector = ({ value, onChange, viewOnly, ...props }) => {
             ))}
           </SectionWrap>
         ))}
-        <h6>Total Units: {getUnitCount(toothChart)}</h6>
       </InnerWrap>
+      <Row>
+        <Col flex={1}>
+          <h6>Total Units: {getUnitCount(toothChart)}</h6>
+        </Col>
+        {workType && (
+          <Col>
+            <h6>Type: <strong>{workType.name}</strong></h6>
+          </Col>
+        )}
+      </Row>
     </Wrap>
   )
 }

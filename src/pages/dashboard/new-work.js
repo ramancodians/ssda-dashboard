@@ -4,7 +4,7 @@ import styled from "styled-components"
 import ToothSelector from "./../../comps/form/tooth-selector"
 import DoctorSearch from "../../comps/form/doctor_search"
 import WorkTypeDropdown from "../../comps/form/workTypeDropdown"
-import { COLLECTIONS, PROGESS_STATUS } from "../../consts"
+import { COLLECTIONS, PROGESS_STATUS, ACTIVITY_ITEMS } from "../../consts"
 import { firestore } from "../../config/firebase"
 import { useFirestoreCollectionMutation } from "@react-query-firebase/firestore"
 import { collection } from "firebase/firestore"
@@ -12,8 +12,9 @@ import { generateNewCode, getCurrentWorkCode, updateWorkCode } from "../../utils
 import { get } from "lodash"
 import { HeartFilled, FullscreenExitOutlined } from "@ant-design/icons"
 import { useHistory } from "react-router-dom"
-import { workIndex } from "../../config/algolia"
+import { workIndex, addWorkForElastic } from "../../config/algolia"
 import { getUnitCount } from "../../utils/unit"
+import { createActivity } from "../../utils/activity"
 
 const Wrap = styled.div`
   padding: 20px;
@@ -151,12 +152,20 @@ const NewWork = () => {
       overall_status: initProgressStatus("received", new Date()),
       work_status: createWorkStatus(get(basicFormData, "work_type.steps"))
     }
-    console.log({ payload });
     mutation.mutate({
      ...payload,
+    }, {
+      async onSuccess(res) {
+        const docId = res.id
+        await updateWorkCode(workcode)
+        await createActivity(workcode, ACTIVITY_ITEMS.ENTRY_MADE)
+        await addWorkForElastic({
+          ...payload,
+          objectID: docId,
+        })
+        history.push("/dashboard/entry")
+      }
     })
-    await updateWorkCode(workcode)
-    history.push("/dashboard/entry")
   }
 
   return (

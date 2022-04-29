@@ -9,6 +9,7 @@ import { format } from "date-fns"
 import ToothSelector from "../../comps/form/tooth-selector"
 import { getPricing, deformatCurrency, rupeeFormatter } from "../../utils/rupee"
 import { isEmpty } from "lodash"
+import { getListFromFirebase } from "../../utils/unit"
 
 const Wrap = styled.div`
   
@@ -24,24 +25,32 @@ const StatusWrap = styled.div`
 `
 
 const Home = ({ }) => {
-  const ref = collection(firestore, COLLECTIONS.WORK);
   const [ stats, setStats ] = useState({})
-  const mutation = useFirestoreCollectionMutation(ref);
-  const workList = []
-  const startDate = new Date()
-    startDate.setUTCHours(0,0,0,0);
 
+  const startDate = new Date()
+    startDate.setUTCHours(0,0,0,0)
+
+  const entryQuery = query(
+    collection(firestore, COLLECTIONS.WORK),
+    where("created_on", ">", startDate)
+  )
+  
   useEffect(() => {
     getTotalWorkToday()
   }, [])
 
-  const WorkData = useFirestoreQuery([COLLECTIONS.WORK], ref);
+
+
+  const WorkData = useFirestoreQuery([COLLECTIONS.WORK], entryQuery);
+
+  const workList = getListFromFirebase(WorkData)
+
+  console.log({ workList });
 
   const getTotalWorkToday = async () => {
-    console.log("adasdasds");
     const q = query(
       collection(firestore, COLLECTIONS.WORK),
-      where("created_on", ">", startDate)
+      where("created_on", ">", startDate),
     )
     const snap = await getDocs(q)
     const list = snap.docs.map(doc => {
@@ -82,19 +91,9 @@ const Home = ({ }) => {
     })
   }
 
-  if (WorkData.data && WorkData.data) {
-    WorkData.data.docs.map(x => {
-      workList.push(
-        {
-          ...x.data(),
-          id: x.id,
-        }
-      )
-    })
-  }
    return (
     <Wrap>
-      <h2>Overview</h2>
+      <h2>Today's Overview</h2>
       <StatusWrap>
         <Card title="Todays Est.">
           <h2>{rupeeFormatter(stats.totalPrice || 0)}</h2>
@@ -135,6 +134,16 @@ const Home = ({ }) => {
             render: (record) => (
               <Space>
                 <ToothSelector value={Object.keys(record).map(key => record[key])} viewOnly/>
+              </Space>
+            )
+          },
+          {
+            title: 'Price',
+            render: (record) => (
+              <Space>
+                <Tag>
+                  asdsad
+                </Tag>
               </Space>
             )
           },
