@@ -8,6 +8,7 @@ import {
 } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import reportWebVitals from './reportWebVitals';
+
 import 'antd/dist/antd.min.css';
 
 const queryClient = new QueryClient()

@@ -18,25 +18,25 @@ const EntryActions = ({ code, entry, refetch }) => {
   
   const sendUpdates = async () => {
     try {
-      // const res = fetch(`${SMS_API_GATEWAY}/${SMS_SERVICE_KEY}/ADDON_SERVICES/SEND/TSMS`, {
-      //   ...getSMSAPIOptions({
-      //       "From":"SSDALB",
-      //       "To": "9632725300",
-      //       "TemplateName" : "Blindly01",
-      //       "VAR1" : "Raman",
-      //       "VAR2" : "AG1",
-      //       "VAR3" : "28 March",
-      //       "VAR4" : "3 April",
-      //       "VAR5" : "https://ssdentalarts.in/track",
-      //       "VAR6" : "https://ssdentalarts.in",
+      fetch(`${SMS_API_GATEWAY}/${SMS_SERVICE_KEY}/ADDON_SERVICES/SEND/TSMS`, {
+        ...getSMSAPIOptions({
+            "From":"SSDALB",
+            "To": "",
+            "TemplateName" : "SSDA | Status Updates SMS",
+            "VAR1" : "Raman",
+            "VAR2" : "AG1",
+            "VAR3" : "28 March",
+            "VAR4" : "3 April",
+            "VAR5" : "https://ssdentalarts.in/track",
+            "VAR6" : "https://ssdentalarts.in",
           
-      //     } 
-      //   )
-      // }).then(res => {
-      //   console.log("SUCESS", res);
-      // }).catch(error => {
-      //   console.log("FAILED", error);
-      // })
+          } 
+        )
+      }).then(res => {
+        console.log("SUCCESS", res);
+      }).catch(error => {
+        console.log("FAILED", error);
+      })
 
       await sendSMS()
       await createActivity(code, ACTIVITY_ITEMS.UPDATES_SENT)

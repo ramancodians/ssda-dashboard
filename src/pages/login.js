@@ -3,11 +3,15 @@ import React, { useState } from "react"
 import styled from "styled-components"
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./../config/firebase"
-
+import { SHADOW } from "../consts"
 
 const Wrap = styled.div`
   max-width: 300px;
   margin: 40px auto;
+  margin-top: 30vh;
+  box-shadow: ${SHADOW};
+  border-radius: 10px;
+  overflow: hidden;
 `
 
 const Login = (props) => {
@@ -33,7 +37,7 @@ const Login = (props) => {
 
   return (
     <Wrap>
-      <Card title="Login">
+      <Card title="SSDA Login">
         <Form
           onFinish={handleLogin}
           layout="vertical"
