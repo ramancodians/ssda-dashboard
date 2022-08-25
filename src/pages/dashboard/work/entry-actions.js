@@ -21,14 +21,13 @@ const EntryActions = ({ code, entry, refetch }) => {
       fetch(`${SMS_API_GATEWAY}/${SMS_SERVICE_KEY}/ADDON_SERVICES/SEND/TSMS`, {
         ...getSMSAPIOptions({
             "From":"SSDALB",
-            "To": "",
-            "TemplateName" : "SSDA | Status Updates SMS",
+            "To": "9632725300",
+            "TemplateName" : "Update SMS",
             "VAR1" : "Raman",
-            "VAR2" : "AG1",
+            "VAR2" : "A1222",
             "VAR3" : "28 March",
             "VAR4" : "3 April",
-            "VAR5" : "https://ssdentalarts.in/track",
-            "VAR6" : "https://ssdentalarts.in",
+            "VAR5" : "12121",
           
           } 
         )

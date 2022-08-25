@@ -31,6 +31,7 @@ const ChildWrap = styled.div`
   flex: 1;
   padding: 20px;
   margin-top: 60px;
+  margin-left: 200px;
 `
 
 

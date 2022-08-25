@@ -1,3 +1,4 @@
+import { Button, Col, DatePicker, Input, Row } from "antd"
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 
@@ -13,7 +14,27 @@ const Billing = ({ }) => {
   // }, [])
   return (
     <Wrap>
-      <h1>asdasd</h1>
+      <Row gutter={20}>
+        <Col flex={1}>
+          <Input placeholder="Doctor Name"/>
+        </Col>
+        <Col>
+          <DatePicker
+            placeholder="Start Date"
+          />
+        </Col>
+        <Col>
+          <DatePicker
+            placeholder="End Date"
+          />
+        </Col>
+        <Col>
+        <Button type="primary">
+          Generate Bill
+        </Button>
+        </Col>
+      </Row>
+     
     </Wrap>
   )
 }

@@ -10,6 +10,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import ToothSelector from "../../../comps/form/tooth-selector";
 import { useHistory } from "react-router-dom";
 import { getLatestStatus, getListFromFirebase, getColorsAndIconForStatus } from "../../../utils/unit";
+import WorkList from "../../../comps/workList";
 
 const Wrap = styled.div`
   padding: 20px;
@@ -33,8 +34,7 @@ const Addwork = ({ }) => {
   )
   const history = useHistory()
   const workData = useFirestoreQuery([COLLECTIONS.WORK], entryQuery);
-  const workList = getListFromFirebase(workData)
-  console.log({ workList });
+  const data = getListFromFirebase(workData)
    return (
     <Wrap>
       <Row>
@@ -44,89 +44,7 @@ const Addwork = ({ }) => {
           </h2>
         </Col>
       </Row>
-      <Table
-        columns={[
-          {
-            title: 'Date',
-            dataIndex: "created_on",
-            key: "created_on",
-            render: (record) => (
-              <Space>
-                <TimeWrap>
-                  <p>
-                    {format(record.toDate(), "hh:mm | dd MMM")}
-                  </p>
-                  <h4>
-                    {formatDistanceToNow(record.toDate())} ago
-                  </h4>
-                </TimeWrap>
-              </Space>
-            ),
-          },
-          {
-            title: 'Code',
-            dataIndex: "code",
-            key: "code",
-            render: (record) => (
-              <Space>
-                {record}
-              </Space>
-            ),
-          },
-          {
-            title: 'Doctor',
-            dataIndex: "doctor",
-            key: "doctor",
-            render: (doctor) => (
-              <DocInfo>
-                <p>{doctor.full_name}</p>
-                <p>{doctor.clinic_name || "N/a"}</p>
-              </DocInfo>
-            )
-          },
-          {
-            title: 'Work',
-            key: "tooth",
-            render: (record) => (
-              <Space>
-                <ToothSelector
-                  value={Object.keys(record.tooth).map(key => record.tooth[key])}
-                  viewOnly
-                  workType={record.work_type}
-                />
-              </Space>
-            )
-          },
-          {
-            title: 'Price',
-            render: (record) => (
-              <Space>
-                {getPricing(record.work_type, record.unit_count)}
-              </Space>
-            )
-          },
-          {
-            title: 'Status',
-            render: (record) => (
-              <Space>
-                {getColorsAndIconForStatus(getLatestStatus(record.work_status))}
-              </Space>
-            )
-          },
-          {
-            title: 'Actions',
-            key: "tooth",
-            render: (record) => (
-              <Space>
-                <Button onClick={() => { history.push(`/dashboard/entry/${record.code}`) }}>
-                  View Details
-                </Button>
-              </Space>
-            )
-          },
-        ]}
-        dataSource={workList}
-      />
+     <WorkList data={data} />
     </Wrap>
   )
 }

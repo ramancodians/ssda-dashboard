@@ -7,6 +7,7 @@ import { useFirestoreQuery } from "@react-query-firebase/firestore"
 import { getListFromFirebase } from "../../../utils/unit"
 import { useHistory } from "react-router-dom"
 import { ExclamationCircleOutlined } from "@ant-design/icons"
+import WorkItem from "../../../comps/workList"
 
 const Wrap = styled.div`
   border-top: 1px solid #ccc;
@@ -47,11 +48,9 @@ const WorkByDoctor = ({ docId }) => {
    return (
     <Wrap>
       <h3>Work</h3>
-      {workList && workList.length > 0 && workList.map(item => (
-        <WorkWrap key={item.id} onClick={() => { history.push(`/dashboard/entry/${item.code}`) }}>
-          <h3>{item.code}</h3>
-        </WorkWrap>
-      ))}
+      {workList && workList.length > 0 && (
+        <WorkItem data={workList}/>
+      )}
       {workList && workList.length === 0 && (
         <NoWorkwrap>
           <ExclamationCircleOutlined style={{ fontSize: 60 }} />

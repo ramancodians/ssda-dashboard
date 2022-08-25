@@ -5,9 +5,9 @@ import styled from "styled-components"
 const Wrap = styled.div`
   background: #333;
   width: 200px;
-  height: calc(100vh - 50px);
+  height: 100vh;
   padding-top: 60px;
-  position: sticky;
+  position: fixed;
   ul {
     list-style: none;
     padding: 0px;
@@ -38,15 +38,16 @@ const Sidebar = (props) => {
     const { pathname } = location
     if (pathname.includes("doctors")) {
       isActive = "doctors"
-    }
-    if (pathname.includes("entry")) {
+    } else if (pathname.includes("entry")) {
       isActive = "entry"
-    }
-    if (pathname.includes("work-types")) {
+    } else  if (pathname.includes("work-types")) {
       isActive = "work-types"
-    }
-    if (pathname.includes("staff")) {
+    } else if (pathname.includes("staff")) {
       isActive = "staff"
+    } else if (pathname.includes("billing")) {
+      isActive = "billing"
+    } else {
+      isActive = "dashboard"
     }
   }
   getActiveSection()
@@ -54,8 +55,8 @@ const Sidebar = (props) => {
     <Wrap>
       <ul>
         <Li isActive={isActive === "dashboard"}>
-          <Link to="/dashboard">
-            Dashbaord
+          <Link to="/dashboard" isActive={isActive === "dashboard"}>
+            Daily Dashbaord
           </Link>
         </Li>
         <Li isActive={isActive === "doctors"}>

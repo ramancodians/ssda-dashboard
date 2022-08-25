@@ -10,6 +10,7 @@ import ToothSelector from "../../comps/form/tooth-selector"
 import { getPricing, deformatCurrency, rupeeFormatter } from "../../utils/rupee"
 import { isEmpty } from "lodash"
 import { getListFromFirebase } from "../../utils/unit"
+import WorkList from "../../comps/workList"
 
 const Wrap = styled.div`
   
@@ -45,8 +46,6 @@ const Home = ({ }) => {
 
   const workList = getListFromFirebase(WorkData)
 
-  console.log({ workList });
-
   const getTotalWorkToday = async () => {
     const q = query(
       collection(firestore, COLLECTIONS.WORK),
@@ -68,18 +67,18 @@ const Home = ({ }) => {
       list.map(item => {
         totalPriceLocal = totalPriceLocal + deformatCurrency(getPricing(item.work_type, item.unit_count))
         totalUnitLocal = totalUnitLocal + item.unit_count
-        const recievedObj = item.overall_status.find(x => x.value === "received")
-        const productionObj = item.overall_status.find(x => x.value === "in-production")
-        const readyObj = item.overall_status.find(x => x.value === "ready")
-        if (!isEmpty(recievedObj) && recievedObj.completed_on) {
-          pendingCount = pendingCount + 1
-        }
-        if (!isEmpty(productionObj) && productionObj.completed_on) {
-          inProduction = inProduction + 1
-        }
-        if (!isEmpty(readyObj) && readyObj.completed_on) {
-          readyCount = readyCount + 1
-        }
+        //const recievedObj = item.steps.find(x => x.compel === "received")
+        // const productionObj = item.overall_status.find(x => x.value === "in-production")
+        // const readyObj = item.overall_status.find(x => x.value === "ready")
+        // if (!isEmpty(recievedObj) && recievedObj.completed_on) {
+        //   pendingCount = pendingCount + 1
+        // }
+        // if (!isEmpty(productionObj) && productionObj.completed_on) {
+        //   inProduction = inProduction + 1
+        // }
+        // if (!isEmpty(readyObj) && readyObj.completed_on) {
+        //   readyCount = readyCount + 1
+        // }
       })
     }
     setStats({
@@ -111,68 +110,13 @@ const Home = ({ }) => {
           <h2>{stats.totalInReady}</h2>
         </Card>
       </StatusWrap>
-      <Table
-        columns={[
-          {
-            title: 'Date',
-            dataIndex: "created_on",
-            render: (record) => (
-              <Space>
-                {format(record.toDate(), "hh:mm | dd MMM")}
-              </Space>
-            ),
-          },
-          {
-            title: 'Doctor',
-            dataIndex: ["doctor", "full_name"],
-            key: ["doctor", "full_name"],
-          },
-          {
-            title: 'Work',
-            dataIndex: "tooth",
-            key: "tooth",
-            render: (record) => (
-              <Space>
-                <ToothSelector value={Object.keys(record).map(key => record[key])} viewOnly/>
-              </Space>
-            )
-          },
-          {
-            title: 'Price',
-            render: (record) => (
-              <Space>
-                <Tag>
-                  asdsad
-                </Tag>
-              </Space>
-            )
-          },
-          {
-            title: 'Status',
-            render: (record) => (
-              <Space>
-                <Tag>
-                  Recieved
-                </Tag>
-              </Space>
-            )
-          },
-          {
-            title: 'Actions',
-            dataIndex: "tooth",
-            key: "tooth",
-            render: (record) => (
-              <Space>
-                <Button>
-                  View
-                </Button>
-              </Space>
-            )
-          },
-        ]}
-        dataSource={workList}
-      />
-        
+      <br />
+      <br />
+      {WorkData.isFetching ? (
+        <h1>Loading...</h1>
+      ) : (
+        <WorkList data={workList}/>
+      )}
     </Wrap>
   )
 }

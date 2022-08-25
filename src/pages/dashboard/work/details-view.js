@@ -9,7 +9,7 @@ import { useLocation, useParams } from "react-router-dom"
 import { useFirestoreQuery } from "@react-query-firebase/firestore"
 import { startCase } from "lodash"
 import { format } from "date-fns"
-import { getPricing } from "../../../utils/rupee"
+import { getPricing, rupeeFormatter } from "../../../utils/rupee"
 import Timeline from "./timeline"
 import EntryActions from "./entry-actions"
 
@@ -58,7 +58,7 @@ const DetailsView = () => {
     entryData = snap[0]
   }
 
-  console.log({ timelineRef });
+  console.log({ entryData });
   
   return (
     <Wrap>
@@ -68,9 +68,11 @@ const DetailsView = () => {
         </Col>
         <Col style={{ width: 200 }}>
           <Select style={{ width: 200 }}>
-            <Select.Option value="In Production">
-              In production
-            </Select.Option>
+            {entryData?.work_status?.map(op => (
+              <Select.Option value={op.value} key={op.value}>
+                {op.label}
+              </Select.Option>
+            ))}
           </Select>
         </Col>
       </Row>
@@ -104,10 +106,11 @@ const DetailsView = () => {
                 <p>Work Type</p>
                 <h4>{entryData.work_type.name}</h4>
               </DataView>
-              <DataView>
-                <p>Pricing Type</p>
-                <h4>{entryData.work_type.pricing_type}</h4>
-              </DataView>
+             
+            </NonEditablefield>
+
+            <h3>Doctor Details</h3>
+            <NonEditablefield>
               <DataView>
                 <p>Doctor name</p>
                 <h4>
@@ -127,8 +130,24 @@ const DetailsView = () => {
                 <p>Total Price</p>
                 <h4>
                   {getPricing(entryData.work_type, entryData.unit_count)}/-
+                  <br />
+                  <small style={{ color: "#999" }}>{entryData.unit_count} X {rupeeFormatter(entryData.work_type.price)}/-</small>
+
                 </h4>
               </DataView>
+              <DataView>
+                <p>Price Type</p>
+                <h4>
+                  {entryData.work_type.pricing_type}
+                </h4>
+              </DataView>
+              <DataView>
+                <p>Fixed or Flexible</p>
+                <h4 style={{ color: "red" }}>
+                  {entryData.work_type.is_changed && "Price Changed"}
+                </h4>
+              </DataView>
+
             </NonEditablefield>
 
             {entryData.patientInfo && (
@@ -138,13 +157,13 @@ const DetailsView = () => {
                   <DataView>
                     <p>Name</p>
                     <h4>
-                      {entryData.patientInfo.name}
+                      {entryData.patientInfo.name || "N/a"}
                     </h4>
                   </DataView>
                   <DataView>
                     <p>Phone</p>
                     <h4>
-                      {entryData.patientInfo.phone}
+                      {entryData.patientInfo.phone || "N/a"}
                     </h4>
                   </DataView>
                 </NonEditablefield>

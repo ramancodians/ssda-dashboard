@@ -8,6 +8,7 @@ export const COLLECTIONS = {
   WORKCODE: "workcode",
   STAFF: "staff",
   ACTIVITY: "activity",
+  PRICING: "pricing",
 }
 
 export const DATE_FORMAT = "hh:mm a, d/MM/yyyy"
@@ -76,24 +77,28 @@ export const DENTAL_SHADES = [
   "D4",
 ]
 
-export const PROGESS_STATUS = [
-  {
-    label: "Received",
-    value: "received",
-  },{
-    label: "In Production",
-    value: "in-production",
-  },
-  {
-    label: "Ready",
-    value: "ready",
-  },
-  {
-    label: "Delivered",
-    value: "delivered",
-  },
-]
-
+export const PROGESS_STATUS = {
+  PREPEND: [
+    {
+      label: "Received by Lab",
+      value: "received-by-lab",
+    }
+  ],
+  APPEND: [
+    {
+      label: "Ready",
+      value: "ready",
+    },
+    {
+      label: "Delivered",
+      value: "delivered",
+    },
+    {
+      label: "Received by Doctor",
+      value: "Received-by-doctor",
+    }
+  ]
+}
 
 export const ACTIVITY_ITEMS = {
   SMS_SEND_MANNUAL: {

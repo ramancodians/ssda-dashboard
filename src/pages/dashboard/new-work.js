@@ -131,15 +131,12 @@ const NewWork = () => {
 
   const createWorkStatus = (stepsList = []) => {
     if (stepsList && stepsList.length > 0) {
-      const newList = stepsList.map(stepName => {
-        return {
-          label: stepName,
-          value: (stepName || "").toLowerCase().replace(/ /g,"_"),
-        }
-      })
-      return Object.values(newList)
+      const newList = [...stepsList]
+      newList[0].completed_on = new Date()
+      return newList
     }
     return stepsList
+    
   }
 
   const handleFinish = async () => {
@@ -149,7 +146,6 @@ const NewWork = () => {
       code: workcode,
       unit_count: getUnitCount(basicFormData.tooth),
       created_on: new Date(),
-      overall_status: initProgressStatus("received", new Date()),
       work_status: createWorkStatus(get(basicFormData, "work_type.steps"))
     }
     mutation.mutate({

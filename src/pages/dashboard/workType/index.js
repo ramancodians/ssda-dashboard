@@ -5,25 +5,38 @@ import { EditOutlined, CloseCircleOutlined, ExclamationCircleOutlined, PlusCircl
 import { useFirestoreQuery } from "@react-query-firebase/firestore";
 import { collection, doc, deleteDoc } from "firebase/firestore";
 import { useFirestoreCollectionMutation } from "@react-query-firebase/firestore";
-import { COLLECTIONS } from "../../../consts";
+import { COLLECTIONS, PROGESS_STATUS } from "../../../consts";
 import { firestore } from "../../../config/firebase";
 import { rupeeFormatter } from "../../../utils/rupee";
+import ColorTag from "../../../comps/colorTag";
+import { srLatn } from "date-fns/locale";
 
 const Wrap = styled.div`
   padding: 20px;
   background: #fff;
 `
 const WorkWrap = styled.div`
-  
-`
-
-const WorkItem = styled.div`
-  
+  p {
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+  }
 `
 
 const StepsWrap = styled.div`
   .ant-form-item {
     margin-bottom: 5px;
+  }
+`
+
+const StepsList = styled.ul`
+  margin: 0px;
+  list-style: none;
+  font-size: 12px;
+  padding: 0px;
+  font-weight: 600;
+  span {
+    color: #888;
+    font-weight: 500;
   }
 `
 
@@ -48,13 +61,26 @@ const Pricings = ({ }) => {
       )
     })
   }
+
+  const metaMetaDataInStatus = (step, isInProduction = false) => {
+    return {
+      step,
+      completed_on: null,
+      isInProduction,
+    }
+  }
   
   const handleAdd = (values) => {
-    console.log(values);
-    mutation.mutate({
+    const payload = {
       ...values,
+      steps: [
+        ...PROGESS_STATUS.PREPEND.map(x => metaMetaDataInStatus(x.label, false)),
+        ...values.steps.map(x => metaMetaDataInStatus(x, true)),
+        ...PROGESS_STATUS.APPEND.map(x => metaMetaDataInStatus(x.label, false)),
+      ],
       created_on: new Date(),
-    })
+    }
+    mutation.mutate(payload)
     setIsShowNewWorkTypeModal(false)
     workData.refetch()
   }
@@ -75,8 +101,13 @@ const Pricings = ({ }) => {
   const columns = [
     {
       title: 'Name',
-      dataIndex: 'name',
       key: 'name',
+      render: (record) => (
+        <Space>
+          <ColorTag color={record.color} />
+          <p>{record.name}</p>
+        </Space>
+      )
     },
     {
       title: 'Price',
@@ -92,6 +123,26 @@ const Pricings = ({ }) => {
       title: 'Price Type',
       dataIndex: 'pricing_type',
       key: 'pricing_type',
+    },
+    {
+      title: 'Steps',
+      key: 'steps',
+      render: (record) => (
+        <Space>
+          <StepsList>
+            {record.steps.map((x, index) => (
+              <li key={x.step}>
+                {`${index + 1}. ${x.step}`}
+                {x.isInProduction && (
+                  <span>
+                    (In Production)
+                  </span>
+                )}
+              </li>
+            ))}
+          </StepsList>
+        </Space>
+      )
     },
     {
       title: 'Action',
@@ -136,9 +187,7 @@ const Pricings = ({ }) => {
           title="Adding new Work Type"
           footer={null}
           onCancel={() => { setIsShowNewWorkTypeModal(false) }}
-          initialValues={{
-            steps: [{}]
-          }}
+         
         >
           <Form
             layout="vertical"
@@ -177,15 +226,26 @@ const Pricings = ({ }) => {
                 <StepsWrap>
                   <h4>Production Steps</h4>
                   <Typography.Text type="secondary">
-                    Add Steps of tasks to finish this type of entry. This will useful when updating status for this kinda of work in future.
+                    Add Steps of tasks to finish this type of entry. This will useful when updating status for type of work in future.
                   </Typography.Text>
                   <br/>
                   <br/>
+                  {console.log(fields)}
+                  <Row align="center" justify="center">
+                    <Col center>
+                      <p style={{ marginTop: 5, marginRight: 10 }}>
+                        Start
+                      </p>
+                    </Col>
+                    <Col flex={1}>
+                      <Input placeholder="Steps" disabled value="Received by Lab"/>
+                    </Col>
+                  </Row>
                   {fields.map((field, index) => (
                     <Form.Item
                       {...field}
                     >
-                      <Row align="center" justify="center">
+                      <Row align="center" justify="center" gutter={10}>
                         <Col center>
                           <p style={{ marginTop: 5, marginRight: 10 }}>
                             ({index + 1})
@@ -206,6 +266,17 @@ const Pricings = ({ }) => {
                       <Button onClick={add} icon={<PlusCircleFilled />}>
                         Add Step
                       </Button>
+                    </Col>
+                  </Row>
+                  <br />
+                  <Row align="center" justify="center">
+                    <Col center>
+                      <p style={{ marginTop: 5, marginRight: 10 }}>
+                        End
+                      </p>
+                    </Col>
+                    <Col flex={1}>
+                      <Input placeholder="Steps" disabled value="Received by Doctor"/>
                     </Col>
                   </Row>
                 </StepsWrap>
